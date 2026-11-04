@@ -78,7 +78,11 @@
     const P = new URLSearchParams(location.hash.slice(1) || location.search.slice(1));
     const ID = (P.get('id') || '').replace(/[^A-Za-z0-9_-]/g, '');
     const TOKEN = (P.get('token') || '').replace(/[^A-Za-z0-9_-]/g, '');
-    const API = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/(exec|dev)$/.test(P.get('api') || '') ? P.get('api') : '';
+    // /a/macros/ドメイン/s/ (ログイン中のアカウント向けの形) も受け付け、公開用の /macros/s/ に直して使う
+    const API = (function (u) {
+      const m = String(u || '').match(/^https:\/\/script\.google\.com\/(?:a\/macros\/[^\/]+\/|a\/[^\/]+\/macros\/|macros\/)s\/([A-Za-z0-9_-]+)\/(exec|dev)$/);
+      return m ? 'https://script.google.com/macros/s/' + m[1] + '/' + m[2] : '';
+    })(P.get('api'));
     const CK = 'et_' + ID + '_' + TOKEN;
     const W = ['日', '月', '火', '水', '木', '金', '土'];
     const pad = (n) => (n < 10 ? '0' : '') + n;

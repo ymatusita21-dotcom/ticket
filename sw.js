@@ -1,5 +1,5 @@
 // 電子チケット: 画面の部品を端末に保存して、電波が無くても開けるようにする (公演ポータルとの通信は保存しない)
-const CACHE = 'ls-ticket-v1';
+const CACHE = 'ls-ticket-v2';
 const FILES = ['./', './index.html', './qrcode.min.js'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => {
