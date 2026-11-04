@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#1f1b16">
+  <title>電子チケット</title>
+  <style>
+    :root { --band: #3b3227; --band2: #5a4a36; --paper: #fcfaf5; --ink: #2f2a24; --sub: #8b8275; --line: #e2dac9; --bg: #1f1b16; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif; -webkit-text-size-adjust: 100%; min-height: 100vh; }
+    .wrap { max-width: 440px; margin: 0 auto; padding: 18px 14px calc(36px + env(safe-area-inset-bottom)); }
+    .brand { color: #cbbf9f; text-align: center; font-size: 11px; letter-spacing: .4em; margin: 4px 0 12px; }
+    .ticket { background: var(--paper); border-radius: 18px; overflow: hidden; box-shadow: 0 14px 40px rgba(0,0,0,.45); }
+    .top { padding: 20px 22px 18px; background: linear-gradient(135deg, var(--band), var(--band2)); color: #fff; text-align: center; transition: background .6s; }
+    .top.in { background: linear-gradient(120deg, #059669, #10b981, #0ea5e9, #10b981, #059669); background-size: 400% 400%; animation: flow 6s ease infinite; }
+    @keyframes flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    .in-badge { display: inline-block; margin-bottom: 8px; padding: 4px 14px; border-radius: 999px; background: rgba(255,255,255,.25); font-weight: 800; font-size: 14px; letter-spacing: .06em; }
+    .crown { font-size: 12px; opacity: .85; letter-spacing: .08em; }
+    .title { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: 21px; font-weight: 600; line-height: 1.45; margin-top: 4px; letter-spacing: .04em; }
+    .when { margin-top: 12px; font-size: 20px; font-weight: 800; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+    .venue { font-size: 13px; opacity: .9; margin-top: 2px; }
+    .mid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 10px; padding: 16px 22px; }
+    .k { font-size: 11px; color: var(--sub); letter-spacing: .08em; }
+    .v { font-size: 16px; font-weight: 700; margin-top: 1px; overflow-wrap: anywhere; }
+    .v.ok { color: #059669; }
+    .seat { grid-column: 1 / -1; text-align: center; padding: 10px; border-radius: 12px; background: #f3ecdc; }
+    .seat .v { font-size: 28px; font-weight: 900; letter-spacing: .06em; }
+    .warn { margin: 0 22px 14px; padding: 10px 12px; border-radius: 10px; background: #fff1f0; color: #a8322a; font-weight: 700; font-size: 13px; text-align: center; }
+    .cut { position: relative; height: 0; border-top: 2px dashed #d8cfbd; margin: 0 16px; }
+    .cut::before, .cut::after { content: ""; position: absolute; top: -13px; width: 24px; height: 24px; border-radius: 50%; background: var(--bg); }
+    .cut::before { left: -29px; } .cut::after { right: -29px; }
+    .bottom { padding: 16px 22px 22px; text-align: center; }
+    .lead { font-weight: 800; font-size: 14px; margin-bottom: 8px; }
+    .qr { width: min(68vw, 250px); margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; box-shadow: 0 0 0 1px var(--line); }
+    .qr svg { display: block; width: 100%; height: auto; }
+    .wait { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; color: #6b6358; font-size: 12px; line-height: 1.5; }
+    .dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #22c55e; animation: blink 1.2s infinite; }
+    .dot.off { background: #f59e0b; animation: none; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+    .stamp { width: 150px; height: 150px; margin: 4px auto 6px; border-radius: 50%; border: 5px solid #059669; color: #059669; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-12deg); font-weight: 900; }
+    .stamp b { font-size: 34px; letter-spacing: .06em; line-height: 1.1; }
+    .stamp span { font-size: 15px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+    .stamp.pop { animation: pop .55s cubic-bezier(.2, 1.6, .4, 1); }
+    @keyframes pop { 0% { transform: rotate(-12deg) scale(2.2); opacity: 0; } 100% { transform: rotate(-12deg) scale(1); opacity: 1; } }
+    .clock { font-size: 40px; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: .04em; margin-top: 8px; }
+    .cdate { font-size: 13px; color: var(--sub); }
+    .note { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: #ecfdf5; color: #047857; font-size: 13px; font-weight: 700; line-height: 1.6; }
+    .gift { margin-top: 14px; padding: 10px 12px; border-radius: 12px; background: #f3ecdc; color: #5a4a36; font-weight: 800; font-size: 15px; }
+    .gift small { display: block; font-size: 13px; margin-top: 3px; }
+    .gift.todo { background: #fef3c7; color: #92400e; box-shadow: 0 0 0 2px #f59e0b inset; }
+    .gift.todo.in { animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 2px #f59e0b inset, 0 0 0 0 rgba(245,158,11,.5); } 50% { box-shadow: 0 0 0 2px #f59e0b inset, 0 0 0 10px rgba(245,158,11,0); } }
+    .btn { display: inline-block; margin-top: 14px; padding: 9px 18px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .foot { color: #a79d88; font-size: 11px; text-align: center; margin-top: 14px; line-height: 1.7; }
+    .msg { margin-top: 40px; padding: 24px 20px; border-radius: 16px; background: var(--paper); text-align: center; line-height: 1.8; }
+    .msg b { display: block; font-size: 17px; margin-bottom: 6px; }
+    .spin { width: 34px; height: 34px; margin: 60px auto; border: 3px solid rgba(255,255,255,.2); border-top-color: #cbbf9f; border-radius: 50%; animation: rot 1s linear infinite; }
+    @keyframes rot { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">E-TICKET</div>
+    <div id="app"><div class="spin"></div></div>
+  </div>
+  <script src="qrcode.min.js"></script>
+  <script>
+    // 電子チケット (公演ポータルの予約1件ぶん)。URL = #api=<公演ポータルのURL>&id=<公演ID>&token=<予約のQRトークン>
+    // 公演ポータルのURLはこのページに書かない (公開リポジトリなので)。# 以降はサーバーに送られない
+    // 情報は開いた時に公演ポータルから取得する (このページ自体に個人情報は入っていない)。
+    // 一度開いたチケットはこの端末に保存し、電波が無くてもQRは出せる。
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const P = new URLSearchParams(location.hash.slice(1) || location.search.slice(1));
+    const ID = (P.get('id') || '').replace(/[^A-Za-z0-9_-]/g, '');
+    const TOKEN = (P.get('token') || '').replace(/[^A-Za-z0-9_-]/g, '');
+    const API = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/(exec|dev)$/.test(P.get('api') || '') ? P.get('api') : '';
+    const CK = 'et_' + ID + '_' + TOKEN;
+    const W = ['日', '月', '火', '水', '木', '金', '土'];
+    const pad = (n) => (n < 10 ? '0' : '') + n;
+    let data = null, showQr = false, online = true, clockTimer = 0;
+
+    function load() { try { return JSON.parse(localStorage.getItem(CK) || 'null'); } catch (e) { return null; } }
+    function save() { try { localStorage.setItem(CK, JSON.stringify(data)); } catch (e) { } }
+    async function call(body) {
+      const res = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action: 'ticket', id: ID, token: TOKEN }, body)) });
+      return res.json();
+    }
+    function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+    function isShowDay() { return data && String(data.ticket.date || '').replace(/\//g, '-') === ymd(new Date()); }
+    function whenText(t) {
+      const m = String(t.date || '').replace(/\//g, '-').match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (!m) return esc((t.date || '') + ' ' + (t.time || ''));
+      const wd = W[new Date(+m[1], +m[2] - 1, +m[3]).getDay()];
+      return (+m[2]) + '/' + (+m[3]) + ' (' + wd + ') ' + esc(t.time || '') + (t.time ? ' 開演' : '');
+    }
+    function hhmm(at) { const m = String(at || '').match(/(\d{1,2}):(\d{2})/); return m ? pad(+m[1]) + ':' + m[2] : ''; }
+    function qrSvg(text) {
+      try { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
+      catch (e) { return '<div style="padding:30px 0;">QRを表示できませんでした</div>'; }
+    }
+    function msg(title, body) { $('app').innerHTML = '<div class="msg"><b>' + esc(title) + '</b>' + esc(body || '') + '</div>'; }
+
+    function render(popStamp) {
+      const t = data.ticket, p = data.perf || {};
+      if (/^#[0-9a-fA-F]{6}$/.test(p.color || '')) { document.documentElement.style.setProperty('--band', p.color); document.documentElement.style.setProperty('--band2', p.color); }
+      const title = String(p.title || '').replace(/^[『「]|[』」]$/g, '');
+      if (title) document.title = title + ' | 電子チケット';
+      const giftHtml = t.gift
+        ? '<div class="gift' + (t.benefit ? '' : ' todo') + (t.checked && !t.benefit ? ' in' : '') + '">🎁 特典: ' + esc(t.gift.label) + ' ×' + esc(t.gift.qty)
+          + '<small>' + (t.benefit ? '✅ 受け取り済み (' + esc(String(t.benefit).replace(/^済\s*/, '')) + ')' : (t.checked ? 'まだお受け取りになっていません。受付でお受け取りください' : '受付でお受け取りください')) + '</small></div>'
+        : '';
+      let bottom;
+      if (t.checked && !showQr) {
+        bottom = '<div class="stamp' + (popStamp ? ' pop' : '') + '"><b>入場済</b><span>' + esc(hhmm(t.checkinAt)) + '</span></div>'
+          + '<div class="clock" id="clock">--:--:--</div><div class="cdate" id="cdate"></div>'
+          + giftHtml
+          + '<div class="note">再入場の際は、この画面をスタッフにお見せください</div>'
+          + '<button type="button" class="btn" onclick="toggleQr(true)">QRコードを表示</button>';
+      } else {
+        const waitText = !online ? '電波がつながると、入場状態を確認します'
+          : isShowDay() ? '受付でQRが読み取られると、この画面が自動で「入場済み」に変わります'
+          : '公演当日、受付でQRが読み取られると、この画面が「入場済み」に変わります';
+        bottom = '<div class="lead">入場の時に、このQRコードをお見せください</div>'
+          + '<div class="qr">' + qrSvg(data.qr) + '</div>'
+          + giftHtml
+          + (t.checked ? '<button type="button" class="btn" onclick="toggleQr(false)">入場済みの画面に戻る</button>'
+            : '<div class="wait"><span class="dot' + (online ? '' : ' off') + '"></span><span>' + waitText + '</span></div>');
+      }
+      $('app').innerHTML = '<div class="ticket">'
+        + '<div class="top' + (t.checked ? ' in' : '') + '">'
+          + (t.checked ? '<div class="in-badge">✓ 入場済み ' + esc(hhmm(t.checkinAt)) + '</div>' : '')
+          + (p.crown ? '<div class="crown">' + esc(p.crown) + '</div>' : '')
+          + '<div class="title">' + esc(title || '公演') + '</div>'
+          + '<div class="when">' + whenText(t) + '</div>'
+          + (p.venue ? '<div class="venue">' + esc(p.venue) + '</div>' : '')
+        + '</div>'
+        + '<div class="mid">'
+          + (t.seats ? '<div class="seat"><div class="k">座席</div><div class="v">' + esc(t.seats) + '</div></div>' : '')
+          + '<div><div class="k">お名前</div><div class="v">' + esc(t.name) + ' 様</div></div>'
+          + '<div><div class="k">券種 / 枚数</div><div class="v">' + esc(t.ticketType) + ' / ' + esc(t.count) + '枚</div></div>'
+          + '<div><div class="k">受付番号</div><div class="v">' + esc(t.receiveNo) + '</div></div>'
+          + '<div><div class="k">入場</div><div class="v' + (t.checked ? ' ok' : '') + '">' + (t.checked ? '入場済み ' + esc(hhmm(t.checkinAt)) : '未入場') + '</div></div>'
+        + '</div>'
+        + (!t.isPaid ? '<div class="warn">お支払いがまだ確認できていません。受付でお申し出ください。</div>' : '')
+        + '<div class="cut"></div>'
+        + '<div class="bottom">' + bottom + '</div>'
+        + '</div>'
+        + '<div class="foot">このURLはご本人様専用です。他の方に共有しないでください。<br>スクリーンショットではなく、この画面のままお見せください。</div>';
+      startClock();
+    }
+    function startClock() {
+      clearInterval(clockTimer);
+      if (!$('clock')) return;
+      const tick = () => { const d = new Date(), c = $('clock'), cd = $('cdate'); if (!c) return; c.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()); cd.textContent = (d.getMonth() + 1) + '月' + d.getDate() + '日 (' + W[d.getDay()] + ')'; };
+      tick(); clockTimer = setInterval(tick, 1000);
+    }
+    window.toggleQr = (on) => { showQr = on; render(false); };
+
+    // 公演当日だけ、入場・特典の状態を4秒おきに確かめる (入場して特典も受け取ったら止める)
+    let n = 0, pollTimer = 0;
+    function needPoll() { const t = data && data.ticket; return isShowDay() && t && !(t.checked && (!t.gift || t.benefit)); }
+    async function poll() {
+      if (!needPoll() || document.hidden) return;
+      n++;
+      try {
+        const r = await call({ op: 'status', no: data.ticket.receiveNo, full: n % 12 === 1 });
+        online = true;
+        if (!r || !r.ok) return;
+        if (r.cancelled) { localStorage.removeItem(CK); msg('このご予約はキャンセルされています', ''); clearInterval(pollTimer); return; }
+        const t = data.ticket;
+        let changed = false, pop = false;
+        if (r.arrived && !t.checked) { t.checked = true; t.checkinAt = r.at || t.checkinAt; changed = true; pop = true; showQr = false; try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) { } }
+        if (r.benefit !== undefined && String(r.benefit || '') !== String(t.benefit || '')) { t.benefit = String(r.benefit || ''); changed = true; }
+        if (changed) { save(); render(pop); }
+      } catch (e) {
+        if (online) { online = false; if (!data.ticket.checked) render(false); }
+      }
+      if (!needPoll()) clearInterval(pollTimer);
+    }
+
+    async function boot() {
+      if (!ID || !TOKEN || !API) { msg('チケットのURLが正しくありません', 'ご予約確定メールのボタンから開き直してください。'); return; }
+      data = load();
+      if (data) render(false);
+      try {
+        const r = await call({ op: 'get' });
+        if (!r || !r.ok) {
+          if (r && (r.cancelled || r.notFound)) { try { localStorage.removeItem(CK); } catch (e) { } data = null; }
+          if (!data) { msg(r && r.cancelled ? 'このご予約はキャンセルされています' : 'チケットを表示できませんでした', (r && r.error) || ''); return; }
+        } else {
+          data = { ticket: r.ticket, perf: r.perf, qr: r.qr };
+          online = true;
+          save();
+          render(false);
+        }
+      } catch (e) {
+        online = false;
+        if (data) { render(false); } else { msg('通信できませんでした', '電波の良い所で、もう一度開いてください。'); return; }
+      }
+      if (needPoll()) { pollTimer = setInterval(poll, 4000); poll(); }
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+      window.addEventListener('online', () => poll());
+    }
+    if ('serviceWorker' in navigator) { try { navigator.serviceWorker.register('sw.js'); } catch (e) { } }
+    boot();
+  </script>
+</body>
+</html>
