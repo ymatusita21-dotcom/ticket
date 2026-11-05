@@ -58,6 +58,23 @@
     .foot { color: #a79d88; font-size: 11px; text-align: center; margin-top: 14px; line-height: 1.7; }
     .msg { margin-top: 40px; padding: 24px 20px; border-radius: 16px; background: var(--paper); text-align: center; line-height: 1.8; }
     .msg b { display: block; font-size: 17px; margin-bottom: 6px; }
+    /* キャストの写真 (公演ポータルで「キャスト写真: 出す」の公演)。応援キャストは大きく、居ない予約は全員を小さく */
+    .oshi { padding: 16px 22px 4px; text-align: center; }
+    .oshi .k { margin-bottom: 8px; }
+    .oshi-list { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .oshi-one { flex: 0 1 200px; min-width: 0; }
+    .oshi-list.many .oshi-one { flex-basis: 130px; }
+    .ph { aspect-ratio: 3 / 4; border-radius: 14px; overflow: hidden; background: #f3ecdc; box-shadow: 0 0 0 1px var(--line); display: flex; align-items: center; justify-content: center; color: var(--sub); font-size: 28px; font-weight: 800; }
+    .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .oshi .role { font-size: 11px; color: var(--sub); margin-top: 8px; }
+    .oshi .nm { font-size: 17px; font-weight: 800; }
+    .castbox { margin-top: 14px; padding: 14px 14px 16px; border-radius: 18px; background: var(--paper); }
+    .castbox .k { text-align: center; letter-spacing: .3em; margin-bottom: 10px; }
+    .cast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 8px; }
+    .cast-grid .ph { border-radius: 10px; font-size: 18px; }
+    .cast-grid .role { font-size: 9px; color: var(--sub); margin-top: 4px; line-height: 1.3; overflow-wrap: anywhere; }
+    .cast-grid .nm { font-size: 11px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+    .cast-grid > div { text-align: center; min-width: 0; }
     .spin { width: 34px; height: 34px; margin: 60px auto; border: 3px solid rgba(255,255,255,.2); border-top-color: #cbbf9f; border-radius: 50%; animation: rot 1s linear infinite; }
     @keyframes rot { to { transform: rotate(360deg); } }
 
@@ -106,6 +123,11 @@
     body.d-magical .stamp::after { content: "✧ ✦ ✧"; position: absolute; bottom: 10px; color: #cdae6d; font-size: 10px; letter-spacing: .2em; }
     body.d-magical .note { background: #f4eefb; color: #3d3466; }
     body.d-magical .clock { color: #3d3466; }
+    body.d-magical .ph { background: linear-gradient(135deg, #fdeef3, #f7eedb); box-shadow: 0 0 0 1.5px #cdae6d, 0 0 16px rgba(232,183,200,.5); color: #b0879a; }
+    body.d-magical .oshi .k::before, body.d-magical .oshi .k::after { content: " ✦ "; color: #cdae6d; }
+    body.d-magical .oshi .nm { color: #3d3466; }
+    body.d-magical .castbox { border: 1.5px solid #cdae6d; }
+    body.d-magical .cast-grid .ph { box-shadow: 0 0 0 1px #cdae6d; }
   </style>
 </head>
 <body>
@@ -133,6 +155,10 @@
     const W = ['日', '月', '火', '水', '木', '金', '土'];
     const pad = (n) => (n < 10 ? '0' : '') + n;
     let data = null, showQr = false, online = true, clockTimer = 0;
+    // キャストの写真 (公演ごとに端末に保存。チケットの情報とは別に取る)
+    const CC = 'etc_' + ID;
+    let castList = null;
+    try { castList = JSON.parse(localStorage.getItem(CC) || 'null'); } catch (e) { }
 
     function load() { try { return JSON.parse(localStorage.getItem(CK) || 'null'); } catch (e) { return null; } }
     function save() { try { localStorage.setItem(CK, JSON.stringify(data)); } catch (e) { } }
@@ -152,6 +178,39 @@
     function qrSvg(text) {
       try { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
       catch (e) { return '<div style="padding:30px 0;">QRを表示できませんでした</div>'; }
+    }
+    function photo(c) {
+      const src = String(c.photo || '');
+      return '<div class="ph">' + (/^(https:\/\/|data:image\/)/.test(src) ? '<img src="' + esc(src) + '" alt="' + esc(c.name) + '" referrerpolicy="no-referrer">' : esc(String(c.name || '').charAt(0))) + '</div>';
+    }
+    // 応援キャストが居れば名前の上に大きく。居なければ (castHtml(false)) チケットの下にキャスト全員を小さく
+    function castHtml(top) {
+      const on = data.cast && data.cast.on && castList && castList.length;
+      if (!on) return '';
+      const picks = (data.cast.picks || []).map((n) => castList.find((c) => c.name === n)).filter(Boolean);
+      if (top) {
+        if (!picks.length) return '';
+        return '<div class="oshi"><div class="k">応援キャスト</div><div class="oshi-list' + (picks.length > 1 ? ' many' : '') + '">'
+          + picks.map((c) => '<div class="oshi-one">' + photo(c) + (c.role ? '<div class="role">' + esc(c.role) + '</div>' : '') + '<div class="nm">' + esc(c.name) + '</div></div>').join('')
+          + '</div></div>';
+      }
+      if (picks.length) return '';
+      const withPhoto = castList.filter((c) => c.photo);
+      if (!withPhoto.length) return '';
+      return '<div class="castbox"><div class="k">CAST</div><div class="cast-grid">'
+        + withPhoto.map((c) => '<div>' + photo(c) + (c.role ? '<div class="role">' + esc(c.role) + '</div>' : '') + '<div class="nm">' + esc(c.name) + '</div></div>').join('')
+        + '</div></div>';
+    }
+    async function loadCast() {
+      if (!(data && data.cast && data.cast.on)) return;
+      try {
+        const r = await call({ op: 'cast' });
+        if (!r || !r.ok || !Array.isArray(r.cast)) return;
+        const same = JSON.stringify(r.cast) === JSON.stringify(castList);
+        castList = r.cast;
+        try { localStorage.setItem(CC, JSON.stringify(castList)); } catch (e) { }
+        if (!same) render(false);
+      } catch (e) { }
     }
     function msg(title, body) { $('app').innerHTML = '<div class="msg"><b>' + esc(title) + '</b>' + esc(body || '') + '</div>'; }
 
@@ -193,6 +252,7 @@
           + '<div class="when">' + whenText(t) + '</div>'
           + (p.venue ? '<div class="venue">' + esc(p.venue) + '</div>' : '')
         + '</div>'
+        + castHtml(true)
         + '<div class="mid">'
           + (t.seats ? '<div class="seat"><div class="k">座席</div><div class="v">' + esc(t.seats) + '</div></div>' : '')
           + '<div><div class="k">お名前</div><div class="v">' + esc(t.name) + ' 様</div></div>'
@@ -204,6 +264,7 @@
         + '<div class="cut"></div>'
         + '<div class="bottom">' + bottom + '</div>'
         + '</div>'
+        + castHtml(false)
         + '<div class="foot">このURLはご本人様専用です。他の方に共有しないでください。<br>スクリーンショットではなく、この画面のままお見せください。</div>';
       startClock();
     }
@@ -247,10 +308,11 @@
           if (r && (r.cancelled || r.notFound)) { try { localStorage.removeItem(CK); } catch (e) { } data = null; }
           if (!data) { msg(r && r.cancelled ? 'このご予約はキャンセルされています' : 'チケットを表示できませんでした', (r && r.error) || ''); return; }
         } else {
-          data = { ticket: r.ticket, perf: r.perf, qr: r.qr };
+          data = { ticket: r.ticket, perf: r.perf, qr: r.qr, cast: r.cast || null };
           online = true;
           save();
           render(false);
+          loadCast();
         }
       } catch (e) {
         online = false;
