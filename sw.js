@@ -1,5 +1,5 @@
 // 電子チケット: 画面の部品を端末に保存して、電波が無くても開けるようにする (公演ポータルとの通信は保存しない)
-const CACHE = 'ls-ticket-v4';
+const CACHE = 'ls-ticket-v5';
 // キャストの写真 (Google ドライブ) も、一度出した物は端末に保存して電波が無くても出す
 const IMG = 'ls-ticket-img';
 const IMG_HOST = /(^|\.)(googleusercontent\.com|drive\.google\.com)$/;

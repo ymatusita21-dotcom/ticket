@@ -75,6 +75,72 @@
     .cast-grid .role { font-size: 9px; color: var(--sub); margin-top: 4px; line-height: 1.3; overflow-wrap: anywhere; }
     .cast-grid .nm { font-size: 11px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
     .cast-grid > div { text-align: center; min-width: 0; }
+    /* ===== 仕掛け (公演ポータルの「電子チケットの仕掛け」でオンにした公演だけ) ===== */
+    .btn.pri { background: var(--band); color: #fff; border-color: var(--band); }
+    .btn.mini { margin-top: 8px; padding: 5px 12px; font-size: 12px; }
+    a.btn { text-decoration: none; }
+    /* ④ カウントダウン */
+    .cd { margin-bottom: 12px; padding: 10px; border-radius: 12px; background: #f3ecdc; }
+    .cd small { display: block; font-size: 11px; color: var(--sub); letter-spacing: .1em; }
+    .cd b { font-size: 30px; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+    .live { position: fixed; inset: 0; z-index: 40; background: #050508; color: #8a8494; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; line-height: 1.9; }
+    .live b { color: #c9c3d3; font-size: 18px; letter-spacing: .1em; }
+    .live .moon { font-size: 40px; margin-bottom: 10px; opacity: .6; }
+    .live button { margin-top: 26px; background: transparent; color: #6f6a78; border: 1px solid #2c2a33; border-radius: 999px; padding: 8px 18px; font-family: inherit; font-size: 12px; }
+    /* ⑥ 何回目のご来場 */
+    .visit { margin: 0 22px 14px; padding: 8px 12px; border-radius: 10px; background: #fff7e6; color: #8a5a12; font-weight: 800; font-size: 13px; text-align: center; }
+    /* ③ 座席の図 */
+    .smap { margin-top: 10px; }
+    .stage { background: var(--band); color: #fff; font-size: 11px; letter-spacing: .3em; padding: 4px; border-radius: 6px; margin-bottom: 8px; }
+    .sgrid { display: grid; gap: 2px; }
+    .sgrid i { display: block; aspect-ratio: 1; border-radius: 2px; }
+    .sgrid i.s { background: #d9d0bf; }
+    .sgrid i.me { background: #e11d48; box-shadow: 0 0 0 2px #fff, 0 0 8px 2px rgba(225,29,72,.7); animation: blink 1.2s infinite; position: relative; z-index: 1; }
+    .smap small { display: block; margin-top: 6px; color: var(--sub); font-size: 11px; }
+    /* ② 記念チケット */
+    .memo-head { font-size: 11px; letter-spacing: .4em; opacity: .85; margin-bottom: 6px; }
+    .memo-msg { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: 18px; font-weight: 700; margin: 6px 0 4px; }
+    .tag { margin-top: 12px; font-weight: 800; color: var(--band); }
+    .links { display: flex; flex-direction: column; align-items: center; }
+    .shot { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.85); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; color: #fff; text-align: center; font-size: 13px; }
+    .shot img { max-width: 100%; max-height: 75vh; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.6); margin-bottom: 12px; }
+    /* ⑤ 今日のカード */
+    .gacha { margin-top: 14px; padding: 16px 14px; border-radius: 18px; background: var(--paper); text-align: center; }
+    .gacha .k { letter-spacing: .3em; margin-bottom: 10px; }
+    .gcard { width: 62%; margin: 0 auto; padding: 8px 8px 10px; border-radius: 16px; background: linear-gradient(135deg, #fdf2f7, #fbf3df); box-shadow: 0 0 0 2px #cdae6d, 0 10px 24px rgba(0,0,0,.18); }
+    .gcard .ph { border-radius: 10px; }
+    .gcard .nm { font-weight: 800; margin-top: 6px; }
+    .gcard .role { font-size: 11px; color: var(--sub); }
+    .gcard.reveal { animation: flipin 1.1s cubic-bezier(.2, 1.2, .4, 1); }
+    @keyframes flipin { 0% { transform: perspective(600px) rotateY(180deg) scale(.6); opacity: 0; } 60% { opacity: 1; } 100% { transform: perspective(600px) rotateY(0) scale(1); } }
+    .gcoll { margin-top: 10px; font-size: 13px; font-weight: 700; }
+    .gdots { display: flex; justify-content: center; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+    .gdots span { width: 10px; height: 10px; border-radius: 50%; background: #e6dfd0; }
+    .gdots span.got { background: #cdae6d; }
+    .gnote { margin-top: 8px; font-size: 10px; color: var(--sub); }
+    /* ① 入場の演出 */
+    .fxo { position: fixed; inset: 0; z-index: 50; background: radial-gradient(circle at 50% 45%, rgba(61,52,102,.92), rgba(10,9,22,.97)); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; animation: fadein .4s; }
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    .fxo .mc { position: absolute; width: 150vmin; height: 150vmin; max-width: 760px; max-height: 760px; opacity: .55; animation: spin 14s linear infinite, grow .9s ease-out; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes grow { from { transform: scale(.2); opacity: 0; } }
+    .fxo .sp { position: absolute; top: -20px; color: #f6e6b8; animation: fall linear infinite; text-shadow: 0 0 8px #fff; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+    .fxc { position: relative; width: min(70vw, 260px); text-align: center; color: #fff; animation: rise 1s cubic-bezier(.2, 1.4, .4, 1) .5s both; }
+    @keyframes rise { from { transform: translateY(40px) scale(.7); opacity: 0; } }
+    .fxc .ph { box-shadow: 0 0 0 2px #cdae6d, 0 0 40px 6px rgba(232,183,200,.8); background: #2c2747; color: #e8b7c8; }
+    .fxc .hello { font-size: 12px; letter-spacing: .4em; color: #f6e6b8; margin-bottom: 10px; }
+    .fxc .nm { font-size: 20px; font-weight: 900; margin-top: 10px; text-shadow: 0 0 10px rgba(232,183,200,.9); }
+    .fxc .say { margin-top: 10px; padding: 10px 14px; border-radius: 14px; background: rgba(255,255,255,.12); font-size: 15px; line-height: 1.6; font-weight: 700; }
+    .fxc .big { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: 30px; font-weight: 800; text-shadow: 0 0 16px rgba(232,183,200,.9); }
+    .fxo .tap { position: absolute; bottom: calc(26px + env(safe-area-inset-bottom)); color: rgba(255,255,255,.55); font-size: 12px; }
+    .spin.sm { width: 22px; height: 22px; margin: 10px auto; border-color: rgba(0,0,0,.1); border-top-color: var(--band); }
+    body.d-magical .cd { background: linear-gradient(135deg, #fdeef3, #f7eedb); }
+    body.d-magical .cd b { color: #3d3466; }
+    body.d-magical .visit { background: #f4eefb; color: #3d3466; }
+    body.d-magical .gacha { border: 1.5px solid #cdae6d; }
+    body.d-magical .sgrid i.me { background: #e48aa8; }
+    body.d-magical .tag { color: #b0507a; }
     .spin { width: 34px; height: 34px; margin: 60px auto; border: 3px solid rgba(255,255,255,.2); border-top-color: #cbbf9f; border-radius: 50%; animation: rot 1s linear infinite; }
     @keyframes rot { to { transform: rotate(360deg); } }
 
@@ -185,7 +251,7 @@
     }
     // 応援キャストが居れば名前の上に大きく。居なければ (castHtml(false)) チケットの下にキャスト全員を小さく
     function castHtml(top) {
-      const on = data.cast && data.cast.on && castList && castList.length;
+      const on = data.cast && data.cast.on && castList && castList.length; // 写真の欄 (演出・ガチャだけの公演では出さない)
       if (!on) return '';
       const picks = (data.cast.picks || []).map((n) => castList.find((c) => c.name === n)).filter(Boolean);
       if (top) {
@@ -202,7 +268,7 @@
         + '</div></div>';
     }
     async function loadCast() {
-      if (!(data && data.cast && data.cast.on)) return;
+      if (!(data && data.cast)) return;
       try {
         const r = await call({ op: 'cast' });
         if (!r || !r.ok || !Array.isArray(r.cast)) return;
@@ -212,6 +278,205 @@
         if (!same) render(false);
       } catch (e) { }
     }
+    // ===== 仕掛け (公演ポータルの「電子チケットの仕掛け」でオンにした物だけ。data.fx) =====
+    let liveHidden = false, seatOpen = false, seatGrid = null, lastPhase = '';
+    try { seatGrid = JSON.parse(localStorage.getItem('ets_' + ID) || 'null'); } catch (e) { }
+    const fxOf = () => (data && data.fx) || {};
+    function showStart() {
+      const m = String(data.ticket.date || '').replace(/\//g, '-').match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      const h = String(data.ticket.time || '').match(/(\d{1,2}):(\d{2})/);
+      return m ? new Date(+m[1], +m[2] - 1, +m[3], h ? +h[1] : 0, h ? +h[2] : 0) : null;
+    }
+    // before = 開演前 / live = 上演中 / after = 終演後 (上演時間は公演ポータルの設定、無ければ120分)
+    function phase() {
+      const st = data && showStart();
+      if (!st) return 'before';
+      const now = Date.now(), end = st.getTime() + (Number(fxOf().minutes) || 120) * 60000;
+      return now < st.getTime() ? 'before' : now < end ? 'live' : 'after';
+    }
+    function cdText() {
+      const st = showStart(); if (!st) return '';
+      const sec = Math.max(0, Math.floor((st.getTime() - Date.now()) / 1000));
+      return Math.floor(sec / 3600) + ':' + pad(Math.floor(sec / 60) % 60) + ':' + pad(sec % 60);
+    }
+    // 1秒ごと: カウントダウンを進め、開演・終演をまたいだら描き直す
+    setInterval(() => {
+      if (!data || !data.fx) return;
+      const ph = phase();
+      if (lastPhase && ph !== lastPhase) { render(false); return; }
+      const c = $('cd'); if (c) c.textContent = cdText();
+    }, 1000);
+    window.hideLive = () => { liveHidden = true; render(false); };
+    function liveHtml() {
+      return '<div class="live"><div class="moon">☾</div><b>ただいま上演中です</b><div>スマートフォンの電源をお切りいただくか<br>機内モードにしてお楽しみください</div>'
+        + '<button type="button" onclick="hideLive()">チケットを表示する</button></div>';
+    }
+    // ⑥ この公演 何回目のご来場か
+    function visitHtml() {
+      const v = Number(data.visits) || 0;
+      if (!fxOf().visits || !v) return '';
+      return '<div class="visit">' + (v >= 2 ? '🎉 この公演 ' + v + '回目のご来場です。いつもありがとうございます！' : '✨ この公演 はじめてのご来場です。ようこそ！') + '</div>';
+    }
+    // ③ 座席の図 (舞台が上)
+    const normSeat = (x) => String(x || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
+    window.toggleSeat = async () => {
+      seatOpen = !seatOpen; render(false);
+      if (!seatOpen || seatGrid) return;
+      try {
+        const r = await call({ op: 'seatmap' });
+        if (r && r.ok) { seatGrid = { rows: r.rows, cols: r.cols, cells: r.cells }; try { localStorage.setItem('ets_' + ID, JSON.stringify(seatGrid)); } catch (e) { } }
+        else seatGrid = { rows: 0, cols: 0, cells: [] };
+      } catch (e) { seatOpen = false; }
+      render(false);
+    };
+    function seatHtml() {
+      if (!fxOf().seatmap || !data.ticket.seats) return '';
+      let h = '<button type="button" class="btn mini" onclick="toggleSeat()">' + (seatOpen ? '座席の図を閉じる' : '🗺 座席の位置を見る') + '</button>';
+      if (!seatOpen) return h;
+      if (!seatGrid) return h + '<div class="spin sm"></div>';
+      if (!seatGrid.cells.length) return h + '<div class="smap"><small>座席の図はまだ用意されていません</small></div>';
+      const mine = {};
+      String(data.ticket.seats).split(/[,、\s]+/).forEach((x) => { if (x) mine[normSeat(x)] = 1; });
+      let minR = 1e9, maxR = 0, minC = 1e9, maxC = 0;
+      seatGrid.cells.forEach((c) => { minR = Math.min(minR, c[0]); maxR = Math.max(maxR, c[0]); minC = Math.min(minC, c[1]); maxC = Math.max(maxC, c[1]); });
+      const at = {};
+      seatGrid.cells.forEach((c) => { at[c[0] + '_' + c[1]] = c; });
+      let cells = '';
+      for (let r = minR; r <= maxR; r++) for (let c = minC; c <= maxC; c++) {
+        const x = at[r + '_' + c];
+        cells += x ? '<i class="s' + (mine[normSeat(x[2])] ? ' me' : '') + '"></i>' : '<i></i>';
+      }
+      return h + '<div class="smap"><div class="stage">STAGE</div><div class="sgrid" style="grid-template-columns:repeat(' + (maxC - minC + 1) + ',1fr)">' + cells + '</div><small>● 光っているのがあなたの席です</small></div>';
+    }
+    // ⑤ 今日のカード (チケットごとに決まった1枚。この端末で集めたカードを数える)
+    function hashStr(x) { let h = 2166136261; for (let i = 0; i < x.length; i++) { h ^= x.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+    function gachaPick() {
+      const pool = (castList || []).filter((c) => c.photo);
+      return pool.length ? pool[hashStr(TOKEN) % pool.length] : null;
+    }
+    function gachaHtml() {
+      if (!fxOf().gacha || !data.ticket.checked) return '';
+      const c = gachaPick(); if (!c) return '';
+      const pool = castList.filter((x) => x.photo);
+      const GK = 'etg_' + ID;
+      let got = []; try { got = JSON.parse(localStorage.getItem(GK) || '[]'); } catch (e) { }
+      const fresh = got.indexOf(c.name) < 0;
+      if (fresh) { got.push(c.name); try { localStorage.setItem(GK, JSON.stringify(got)); } catch (e) { } }
+      const n = pool.filter((x) => got.indexOf(x.name) >= 0).length;
+      return '<div class="gacha"><div class="k">TODAY\'S CARD</div>'
+        + '<div class="gcard' + (fresh ? ' reveal' : '') + '">' + photo(c) + '<div class="nm">' + esc(c.name) + '</div>' + (c.role ? '<div class="role">' + esc(c.role) + '</div>' : '') + '</div>'
+        + '<div class="gcoll">コレクション ' + n + ' / ' + pool.length + (fresh ? ' 　NEW!' : '') + '</div>'
+        + '<div class="gdots">' + pool.map((x) => '<span class="' + (got.indexOf(x.name) >= 0 ? 'got' : '') + '"></span>').join('') + '</div>'
+        + '<div class="gnote">※記念の画面です。特典の引換券ではありません。ほかの回に来るとカードが増えます</div></div>';
+    }
+    // ① 入場した瞬間の演出 (応援キャストの写真と一言)
+    function picksOf() { return ((data.cast && data.cast.picks) || []).map((n) => (castList || []).find((c) => c.name === n)).filter(Boolean); }
+    function magicCircle() {
+      let s = '<svg class="mc" viewBox="-100 -100 200 200" fill="none" stroke="#cdae6d" stroke-width=".6">'
+        + '<circle r="96"/><circle r="88"/><circle r="60" stroke="#e8b7c8"/><circle r="56"/>'
+        + '<polygon points="0,-88 51.7,71.2 -83.7,-27.2 83.7,-27.2 -51.7,71.2" stroke="#e8b7c8"/>'
+        + '<polygon points="0,-56 48.5,28 -48.5,28"/><polygon points="0,56 48.5,-28 -48.5,-28"/>';
+      for (let i = 0; i < 24; i++) { const a = i * Math.PI / 12; s += '<circle cx="' + (92 * Math.cos(a)).toFixed(1) + '" cy="' + (92 * Math.sin(a)).toFixed(1) + '" r="1.6" fill="#f6e6b8"/>'; }
+      return s + '</svg>';
+    }
+    window.closeFx = () => { const o = $('fxo'); if (o) o.remove(); };
+    window.showHenshin = () => {
+      closeFx();
+      const p = picksOf();
+      let sp = '';
+      for (let i = 0; i < 26; i++) sp += '<span class="sp" style="left:' + (Math.random() * 100).toFixed(1) + '%;font-size:' + (8 + Math.random() * 16).toFixed(0) + 'px;animation-duration:' + (3 + Math.random() * 4).toFixed(1) + 's;animation-delay:' + (-Math.random() * 6).toFixed(1) + 's">' + (i % 3 ? '✦' : '✧') + '</span>';
+      const card = p.length
+        ? '<div class="hello">WELCOME</div>' + photo(p[0]) + '<div class="nm">' + esc(p.map((c) => c.name).join(' ・ ')) + '</div>'
+          + '<div class="say">' + esc(p[0].msg || 'ご来場ありがとうございます！最後まで楽しんでいってください') + '</div>'
+        : '<div class="hello">WELCOME</div><div class="big">ようこそ</div><div class="say">' + esc(String((data.perf && data.perf.title) || '').replace(/^[『「]|[』」]$/g, '')) + '<br>ご来場ありがとうございます！</div>';
+      const o = document.createElement('div');
+      o.className = 'fxo'; o.id = 'fxo'; o.onclick = closeFx;
+      o.innerHTML = magicCircle() + sp + '<div class="fxc">' + card + '</div><div class="tap">タップで閉じる</div>';
+      document.body.appendChild(o);
+      setTimeout(closeFx, 12000);
+    };
+    // ② 記念チケット (終演後)。記念画像はお名前を入れずに作る
+    window.copyTag = () => { try { navigator.clipboard.writeText(fxOf().hashtag); const b = $('tagbtn'); if (b) b.textContent = 'コピーしました'; } catch (e) { } };
+    function memoBottom(t) {
+      const fx = fxOf();
+      return '<div class="memo-msg">' + (t.checked ? 'ご来場ありがとうございました' : 'ご予約ありがとうございました') + '</div>'
+        + (t.checked ? '<div class="stamp"><b>入場済</b><span>' + esc(hhmm(t.checkinAt)) + '</span></div>' : '')
+        + '<div class="links">'
+        + '<button type="button" class="btn pri" id="shotbtn" onclick="makeMemorial()">📷 記念画像をつくる</button>'
+        + (fx.hashtag ? '<div class="tag">' + esc(fx.hashtag) + ' <button type="button" class="btn mini" id="tagbtn" onclick="copyTag()">コピー</button></div>' : '')
+        + (fx.survey ? '<a class="btn" href="' + esc(fx.survey) + '" target="_blank" rel="noopener">📝 アンケートに答える</a>' : '')
+        + (fx.next ? '<a class="btn" href="' + esc(fx.next) + '" target="_blank" rel="noopener">🎭 次回公演のご案内</a>' : '')
+        + '<button type="button" class="btn mini" onclick="toggleQr(true)">QRコードを表示</button></div>';
+    }
+    function loadImg(src) { return new Promise((ok) => { if (!src) return ok(null); const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = src; }); }
+    function wrapText(g, text, maxW) {
+      const lines = []; let cur = '';
+      for (const ch of String(text)) { if (g.measureText(cur + ch).width > maxW && cur) { lines.push(cur); cur = ch; } else cur += ch; }
+      if (cur) lines.push(cur);
+      return lines;
+    }
+    window.makeMemorial = async () => {
+      const btn = $('shotbtn'); if (btn) { btn.disabled = true; btn.textContent = '作っています…'; }
+      const t = data.ticket, p = data.perf || {}, fx = fxOf();
+      const magical = document.body.classList.contains('d-magical');
+      const who = picksOf()[0] || (fx.gacha && t.checked ? gachaPick() : null);
+      let src = '';
+      if (who && who.photo) {
+        if (/^data:image\//.test(who.photo)) src = who.photo;
+        else { try { const r = await call({ op: 'photo64', name: who.name }); if (r && r.ok) src = r.data || ''; } catch (e) { } }
+      }
+      const im = await loadImg(src);
+      const W2 = 1080, H2 = 1520, cv = document.createElement('canvas'); cv.width = W2; cv.height = H2;
+      const g = cv.getContext('2d');
+      const cs = getComputedStyle(document.body);
+      const band = (cs.getPropertyValue('--band') || '#3b3227').trim(), band2 = (cs.getPropertyValue('--band2') || '#5a4a36').trim();
+      const gold = magical ? '#cdae6d' : '#cbbf9f', serif = '"Hiragino Mincho ProN","Yu Mincho",serif', sans = '"Hiragino Sans","Yu Gothic",sans-serif';
+      let gr = g.createLinearGradient(0, 0, W2, H2);
+      gr.addColorStop(0, magical ? '#1c1a38' : '#1f1b16'); gr.addColorStop(1, magical ? '#3d3466' : '#3b3227');
+      g.fillStyle = gr; g.fillRect(0, 0, W2, H2);
+      if (magical) { g.fillStyle = '#fff'; for (let i = 0; i < 90; i++) { const x = (hashStr('x' + i) % W2), y = (hashStr('y' + i) % H2); g.globalAlpha = .3 + (i % 5) / 7; g.fillRect(x, y, 2 + i % 3, 2 + i % 3); } g.globalAlpha = 1; }
+      const rr = (x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
+      rr(70, 70, W2 - 140, H2 - 140, 40); g.fillStyle = magical ? '#fffafc' : '#fcfaf5'; g.fill(); g.lineWidth = 4; g.strokeStyle = gold; g.stroke();
+      g.save(); rr(70, 70, W2 - 140, 400, 40); g.clip();
+      gr = g.createLinearGradient(70, 70, W2 - 70, 470);
+      gr.addColorStop(0, magical ? '#232136' : band); gr.addColorStop(1, magical ? '#6b4a7a' : band2);
+      g.fillStyle = gr; g.fillRect(70, 70, W2 - 140, 400); g.restore();
+      g.textAlign = 'center'; g.fillStyle = gold; g.font = '700 30px ' + sans; g.fillText('M E M O R I A L   T I C K E T', W2 / 2, 140);
+      g.fillStyle = '#fff';
+      if (p.crown) { g.font = '400 30px ' + sans; g.fillText(p.crown, W2 / 2, 200); }
+      g.font = '700 66px ' + serif;
+      const title = String(p.title || '').replace(/^[『「]|[』」]$/g, '');
+      const tl = wrapText(g, title, W2 - 240).slice(0, 2);
+      tl.forEach((l, i) => g.fillText(l, W2 / 2, 290 + i * 78 - (tl.length - 1) * 39));
+      g.fillStyle = magical ? '#f6e6b8' : '#fff'; g.font = '800 40px ' + sans;
+      g.fillText(whenText(t).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&') + (p.venue ? '  ' + p.venue : ''), W2 / 2, 430);
+      let y = 530;
+      if (im) {
+        const pw = 440, ph = 586, px = (W2 - pw) / 2;
+        g.save(); rr(px, y, pw, ph, 28); g.clip();
+        const sc = Math.max(pw / im.width, ph / im.height);
+        g.drawImage(im, px + (pw - im.width * sc) / 2, y + (ph - im.height * sc) / 2, im.width * sc, im.height * sc);
+        g.restore(); rr(px, y, pw, ph, 28); g.lineWidth = 5; g.strokeStyle = gold; g.stroke();
+        y += ph + 70;
+        g.fillStyle = magical ? '#3d3466' : '#2f2a24'; g.font = '800 46px ' + sans; g.fillText(who.name, W2 / 2, y); y += 72;
+      } else { y = 700; g.fillStyle = gold; g.font = '700 120px ' + serif; g.fillText('✦', W2 / 2, y); y += 160; }
+      g.fillStyle = magical ? '#b0507a' : '#2f2a24'; g.font = '700 40px ' + serif;
+      g.fillText(t.checked ? 'ご来場ありがとうございました' : 'ご予約ありがとうございました', W2 / 2, y); y += 62;
+      if (t.seats) { g.fillStyle = '#8b8275'; g.font = '700 34px ' + sans; g.fillText('SEAT  ' + t.seats, W2 / 2, y); }
+      if (fx.hashtag) { g.fillStyle = magical ? '#b0507a' : band; g.font = '800 38px ' + sans; g.fillText(fx.hashtag, W2 / 2, H2 - 130); }
+      const url = cv.toDataURL('image/png');
+      if (btn) { btn.disabled = false; btn.textContent = '📷 記念画像をつくる'; }
+      let shared = false;
+      try {
+        const blob = await (await fetch(url)).blob();
+        const file = new File([blob], 'memorial.png', { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: fx.hashtag || '' }); shared = true; }
+      } catch (e) { if (e && e.name === 'AbortError') shared = true; }
+      if (shared) return;
+      const o = document.createElement('div'); o.className = 'shot'; o.id = 'shot';
+      o.innerHTML = '<img src="' + url + '" alt="記念画像"><div>画像を長押しで保存できます</div><a class="btn" download="memorial.png" href="' + url + '">保存する</a><button type="button" class="btn" onclick="document.getElementById(\'shot\').remove()">閉じる</button>';
+      document.body.appendChild(o);
+    };
     function msg(title, body) { $('app').innerHTML = '<div class="msg"><b>' + esc(title) + '</b>' + esc(body || '') + '</div>'; }
 
     function render(popStamp) {
@@ -227,26 +492,33 @@
         ? '<div class="gift' + (t.benefit ? '' : ' todo') + (t.checked && !t.benefit ? ' in' : '') + '">🎁 特典: ' + esc(t.gift.label) + ' ×' + esc(t.gift.qty)
           + '<small>' + (t.benefit ? '✅ 受け取り済み (' + esc(String(t.benefit).replace(/^済\s*/, '')) + ')' : (t.checked ? 'まだお受け取りになっていません。受付でお受け取りください' : '受付でお受け取りください')) + '</small></div>'
         : '';
+      const fx = fxOf(), ph = phase(); lastPhase = data.fx ? ph : '';
+      const memo = fx.memorial && ph === 'after';
       let bottom;
-      if (t.checked && !showQr) {
+      if (memo && !showQr) {
+        bottom = memoBottom(t);
+      } else if (t.checked && !showQr) {
         bottom = '<div class="stamp' + (popStamp ? ' pop' : '') + '"><b>入場済</b><span>' + esc(hhmm(t.checkinAt)) + '</span></div>'
           + '<div class="clock" id="clock">--:--:--</div><div class="cdate" id="cdate"></div>'
           + giftHtml
           + '<div class="note">再入場の際は、この画面をスタッフにお見せください</div>'
-          + '<button type="button" class="btn" onclick="toggleQr(true)">QRコードを表示</button>';
+          + '<button type="button" class="btn" onclick="toggleQr(true)">QRコードを表示</button>'
+          + (fx.henshin ? '<br><button type="button" class="btn mini" onclick="showHenshin()">✨ 入場の演出をもう一度</button>' : '');
       } else {
         const waitText = !online ? '電波がつながると、入場状態を確認します'
           : isShowDay() ? '受付でQRが読み取られると、この画面が自動で「入場済み」に変わります'
           : '公演当日、受付でQRが読み取られると、この画面が「入場済み」に変わります';
-        bottom = '<div class="lead">入場の時に、このQRコードをお見せください</div>'
+        bottom = (fx.countdown && ph === 'before' && isShowDay() && !t.checked ? '<div class="cd"><small>開演まで</small><b id="cd">' + cdText() + '</b></div>' : '')
+          + '<div class="lead">入場の時に、このQRコードをお見せください</div>'
           + '<div class="qr">' + qrSvg(data.qr) + '</div>'
           + giftHtml
           + (t.checked ? '<button type="button" class="btn" onclick="toggleQr(false)">入場済みの画面に戻る</button>'
             : '<div class="wait"><span class="dot' + (online ? '' : ' off') + '"></span><span>' + waitText + '</span></div>');
       }
       $('app').innerHTML = '<div class="ticket">'
-        + '<div class="top' + (t.checked ? ' in' : '') + '">'
-          + (t.checked ? '<div class="in-badge">✓ 入場済み ' + esc(hhmm(t.checkinAt)) + '</div>' : '')
+        + '<div class="top' + (t.checked && !memo ? ' in' : '') + '">'
+          + (memo ? '<div class="memo-head">MEMORIAL TICKET</div>' : '')
+          + (t.checked && !memo ? '<div class="in-badge">✓ 入場済み ' + esc(hhmm(t.checkinAt)) + '</div>' : '')
           + (p.crown ? '<div class="crown">' + esc(p.crown) + '</div>' : '')
           + '<div class="title">' + esc(title || '公演') + '</div>'
           + '<div class="when">' + whenText(t) + '</div>'
@@ -254,18 +526,21 @@
         + '</div>'
         + castHtml(true)
         + '<div class="mid">'
-          + (t.seats ? '<div class="seat"><div class="k">座席</div><div class="v">' + esc(t.seats) + '</div></div>' : '')
+          + (t.seats ? '<div class="seat"><div class="k">座席</div><div class="v">' + esc(t.seats) + '</div>' + seatHtml() + '</div>' : '')
           + '<div><div class="k">お名前</div><div class="v">' + esc(t.name) + ' 様</div></div>'
           + '<div><div class="k">券種 / 枚数</div><div class="v">' + esc(t.ticketType) + ' / ' + esc(t.count) + '枚</div></div>'
           + '<div><div class="k">受付番号</div><div class="v">' + esc(t.receiveNo) + '</div></div>'
           + '<div><div class="k">入場</div><div class="v' + (t.checked ? ' ok' : '') + '">' + (t.checked ? '入場済み ' + esc(hhmm(t.checkinAt)) : '未入場') + '</div></div>'
         + '</div>'
+        + visitHtml()
         + (!t.isPaid ? '<div class="warn">お支払いがまだ確認できていません。受付でお申し出ください。</div>' : '')
         + '<div class="cut"></div>'
         + '<div class="bottom">' + bottom + '</div>'
         + '</div>'
+        + gachaHtml()
         + castHtml(false)
-        + '<div class="foot">このURLはご本人様専用です。他の方に共有しないでください。<br>スクリーンショットではなく、この画面のままお見せください。</div>';
+        + '<div class="foot">このURLはご本人様専用です。他の方に共有しないでください。<br>スクリーンショットではなく、この画面のままお見せください。</div>'
+        + (fx.countdown && ph === 'live' && !liveHidden ? liveHtml() : '');
       startClock();
     }
     function startClock() {
@@ -291,7 +566,7 @@
         let changed = false, pop = false;
         if (r.arrived && !t.checked) { t.checked = true; t.checkinAt = r.at || t.checkinAt; changed = true; pop = true; showQr = false; try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) { } }
         if (r.benefit !== undefined && String(r.benefit || '') !== String(t.benefit || '')) { t.benefit = String(r.benefit || ''); changed = true; }
-        if (changed) { save(); render(pop); }
+        if (changed) { save(); render(pop); if (pop && fxOf().henshin) showHenshin(); }
       } catch (e) {
         if (online) { online = false; if (!data.ticket.checked) render(false); }
       }
@@ -308,7 +583,7 @@
           if (r && (r.cancelled || r.notFound)) { try { localStorage.removeItem(CK); } catch (e) { } data = null; }
           if (!data) { msg(r && r.cancelled ? 'このご予約はキャンセルされています' : 'チケットを表示できませんでした', (r && r.error) || ''); return; }
         } else {
-          data = { ticket: r.ticket, perf: r.perf, qr: r.qr, cast: r.cast || null };
+          data = { ticket: r.ticket, perf: r.perf, qr: r.qr, cast: r.cast || null, fx: r.fx || null, visits: r.visits || 0 };
           online = true;
           save();
           render(false);
