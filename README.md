@@ -8,3 +8,8 @@ URL: `https://ymatusita21-dotcom.github.io/ticket/#api=<公演ポータルのURL
 - 一度開いたチケットは端末に保存され、電波が無くてもQRを表示できる。
 - index.html を変えたら sw.js の CACHE 名を上げる。
 - 公演ポータルのURL・キー・個人情報はこのリポジトリに書かない (URLの # 以降で渡す)。
+
+## edit.html (予約の変更・キャンセル)
+
+公演ポータルの EditReservation.html から `node tools/build-editres-pages.mjs ../ticket` で作る (ここで直接直さない)。
+`edit.html#api=<公演ポータル>&id=<公演ID>&t=<編集トークン>` で開く。予約完了メールの「編集URL」がこの形になる。

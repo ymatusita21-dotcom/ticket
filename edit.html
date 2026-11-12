@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>予約内容変更 / キャンセル</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --line: #e2e8f0;
+      --primary: #4f46e5;
+      --danger: #dc2626;
+      --warn: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+    }
+
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin: 0 0 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .row .lbl {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .row .val {
+      font-weight: 600;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input[type="number"] {
+      width: 120px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: #fff;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .alert {
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .alert-ok {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .alert-err {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .alert-info {
+      background: #eff6ff;
+      color: #1e3a8a;
+      border: 1px solid #bfdbfe;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .canceled {
+      background: #fef2f2;
+    }
+
+    /* v3.76: ダークモード廃止 */
+    :root {
+      color-scheme: light !important;
+    }
+  </style>
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <script>
+    const _erHash_ = (function () {
+      const o = {};
+      String(location.hash || '').replace(/^#/, '').split('&').forEach(function (p) { const i = p.indexOf('='); if (i > 0) o[decodeURIComponent(p.slice(0, i))] = decodeURIComponent(p.slice(i + 1)); });
+      return o;
+    })();
+    window.google = { script: { get run() {
+      let ok = null, ng = null;
+      const r = new Proxy({}, { get: function (t, k) {
+        if (k === 'withSuccessHandler') return function (f) { ok = f; return r; };
+        if (k === 'withFailureHandler') return function (f) { ng = f; return r; };
+        if (k === 'withUserObject') return function () { return r; };
+        return function () {
+          const args = Array.prototype.slice.call(arguments);
+          if (!_erHash_.api) { if (ng) ng(new Error('メールに書かれたリンクから開いてください')); return; }
+          fetch(_erHash_.api, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'editres', op: k, args: args }) })
+            .then(function (x) { return x.json(); })
+            .then(function (j) { if (j && j.ok) { if (ok) ok(j.result); } else if (ng) ng(new Error((j && (j.error || j.message)) || '通信できませんでした')); })
+            .catch(function () { if (ng) ng(new Error('通信できませんでした。電波の良い所でもう一度お試しください。')); });
+        };
+      } });
+      return r;
+    } } };
+  </script>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>予約内容変更 / キャンセル</h1>
+    <div id="alert"></div>
+    <div id="loading" class="card">読み込み中…</div>
+    <div id="content" style="display:none;">
+      <div class="card">
+        <div id="info"></div>
+      </div>
+      <div class="card" id="edit-card">
+        <label>枚数の変更</label>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <input type="number" id="newCount" min="1" max="20" />
+          <button class="btn btn-primary" onclick="onUpdateCount()">枚数を変更する</button>
+        </div>
+        <div class="hint">変更には公演事務局の最終確認が必要な場合があります。</div>
+      </div>
+      <div class="card" id="cancel-card">
+        <label style="color: var(--danger);">予約のキャンセル</label>
+        <div class="hint" style="margin-bottom:10px;">キャンセルすると元に戻せません。</div>
+        <button class="btn btn-danger" onclick="onCancel()">この予約をキャンセルする</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const PERFORMANCE_ID = _erHash_.id || '';
+      function $(id) { return document.getElementById(id); }
+      function escapeHtml(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
+      function getQueryParam(name) {
+        if (_erHash_[name]) return _erHash_[name];
+        const m = location.search.match(new RegExp('[?&]' + name + '=([^&]*)'));
+        return m ? decodeURIComponent(m[1]) : '';
+      }
+      function showAlert(html, kind) {
+        $('alert').innerHTML = '<div class="alert alert-' + kind + '">' + html + '</div>';
+      }
+      let _state = null;
+      const editToken = getQueryParam('t');
+
+      function load() {
+        if (!PERFORMANCE_ID || !editToken) {
+          $('loading').textContent = '無効なリンクです（id または t が指定されていません）。';
+          return;
+        }
+        google.script.run
+          .withSuccessHandler((res) => {
+            $('loading').style.display = 'none';
+            $('content').style.display = '';
+            _state = res;
+            renderInfo(res);
+            if (res.reservation.status === 'キャンセル') {
+              showAlert('この予約はキャンセル済みです。', 'info');
+              $('edit-card').style.display = 'none';
+              $('cancel-card').style.display = 'none';
+            } else {
+              $('newCount').value = res.reservation.count;
+            }
+          })
+          .withFailureHandler((e) => {
+            $('loading').textContent = '読込失敗: ' + (e && e.message ? e.message : e);
+          })
+          .getReservationByEditToken(PERFORMANCE_ID, editToken);
+      }
+
+      function renderInfo(res) {
+        const r = res.reservation;
+        const html = ''
+          + (res.crown ? '<div class="row"><div class="lbl">冠タイトル</div><div class="val">' + escapeHtml(res.crown) + '</div></div>' : '')
+          + '<div class="row"><div class="lbl">公演</div><div class="val">' + escapeHtml(res.title || '') + '</div></div>'
+          + (res.venue ? '<div class="row"><div class="lbl">劇場</div><div class="val">' + escapeHtml(res.venue) + '</div></div>' : '')
+          + '<div class="row"><div class="lbl">受付番号</div><div class="val">' + escapeHtml(r.receiveNo) + '</div></div>'
+          + '<div class="row"><div class="lbl">お名前</div><div class="val">' + escapeHtml(r.name) + '</div></div>'
+          + '<div class="row"><div class="lbl">公演日時</div><div class="val">' + escapeHtml(r.date + ' ' + r.time) + '</div></div>'
+          + '<div class="row"><div class="lbl">チケット種別</div><div class="val">' + escapeHtml(r.ticketType) + '</div></div>'
+          + '<div class="row"><div class="lbl">枚数</div><div class="val">' + r.count + '</div></div>'
+          + (r.total ? '<div class="row"><div class="lbl">合計金額</div><div class="val">¥' + Number(r.total).toLocaleString() + '</div></div>' : '')
+          + '<div class="row"><div class="lbl">ステータス</div><div class="val">' + escapeHtml(r.status) + '</div></div>';
+        $('info').innerHTML = html;
+      }
+
+      function onUpdateCount() {
+        const n = Number($('newCount').value || 0);
+        if (n < 1) { showAlert('枚数は1以上で入力してください', 'err'); return; }
+        if (!confirm('枚数を ' + n + ' 枚に変更します。よろしいですか？')) return;
+        showAlert('変更中…', 'info');
+        google.script.run
+          .withSuccessHandler((res) => {
+            showAlert('枚数を ' + res.oldCount + ' 枚 → ' + res.newCount + ' 枚 に変更しました。', 'ok');
+            load();
+          })
+          .withFailureHandler((e) => showAlert('変更失敗: ' + (e && e.message ? e.message : e), 'err'))
+          .updateReservationCountByToken(PERFORMANCE_ID, editToken, n);
+      }
+
+      function onCancel() {
+        if (!confirm('この予約をキャンセルします。元に戻せません。よろしいですか？')) return;
+        showAlert('処理中…', 'info');
+        google.script.run
+          .withSuccessHandler(() => {
+            showAlert('予約をキャンセルしました。', 'ok');
+            load();
+          })
+          .withFailureHandler((e) => showAlert('キャンセル失敗: ' + (e && e.message ? e.message : e), 'err'))
+          .cancelReservationByToken(PERFORMANCE_ID, editToken);
+      }
+
+      load();
+  </script>
+</body>
+
+</html>
