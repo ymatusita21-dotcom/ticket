@@ -9,7 +9,7 @@ URL: `https://ymatusita21-dotcom.github.io/ticket/#api=<公演ポータルのURL
 - index.html を変えたら sw.js の CACHE 名を上げる。
 - 公演ポータルのURL・キー・個人情報はこのリポジトリに書かない (URLの # 以降で渡す)。
 
-## edit.html (予約の変更・キャンセル)
+## edit.html / payok.html / contact.html
 
-公演ポータルの EditReservation.html から `node tools/build-editres-pages.mjs ../ticket` で作る (ここで直接直さない)。
-`edit.html#api=<公演ポータル>&id=<公演ID>&t=<編集トークン>` で開く。予約完了メールの「編集URL」がこの形になる。
+公演ポータルの EditReservation.html / StaffPayOk.html / Contact.html から `node tools/build-ticket-pages.mjs ../ticket` で作る (ここで直接直さない)。
+いずれも `#api=<公演ポータル>&id=<公演ID>&...` で開く (edit: `&t=編集トークン`、payok: `&k=確認キー`、contact: `&embed=1&theme=snow` も可)。

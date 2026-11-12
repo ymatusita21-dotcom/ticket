@@ -167,7 +167,7 @@
   <meta name="robots" content="noindex">
   <meta name="referrer" content="no-referrer">
   <script>
-    const _erHash_ = (function () {
+    const _pgHash_ = (function () {
       const o = {};
       String(location.hash || '').replace(/^#/, '').split('&').forEach(function (p) { const i = p.indexOf('='); if (i > 0) o[decodeURIComponent(p.slice(0, i))] = decodeURIComponent(p.slice(i + 1)); });
       return o;
@@ -180,8 +180,8 @@
         if (k === 'withUserObject') return function () { return r; };
         return function () {
           const args = Array.prototype.slice.call(arguments);
-          if (!_erHash_.api) { if (ng) ng(new Error('メールに書かれたリンクから開いてください')); return; }
-          fetch(_erHash_.api, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'editres', op: k, args: args }) })
+          if (!_pgHash_.api) { if (ng) ng(new Error("メールに書かれたリンクから開いてください")); return; }
+          fetch(_pgHash_.api, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "editres", op: k, args: args }) })
             .then(function (x) { return x.json(); })
             .then(function (j) { if (j && j.ok) { if (ok) ok(j.result); } else if (ng) ng(new Error((j && (j.error || j.message)) || '通信できませんでした')); })
             .catch(function () { if (ng) ng(new Error('通信できませんでした。電波の良い所でもう一度お試しください。')); });
@@ -217,7 +217,7 @@
     </div>
   </div>
   <script>
-    const PERFORMANCE_ID = _erHash_.id || '';
+    const PERFORMANCE_ID = _pgHash_.id || '';
       function $(id) { return document.getElementById(id); }
       function escapeHtml(s) {
         return String(s == null ? '' : s)
@@ -225,7 +225,7 @@
           .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
       }
       function getQueryParam(name) {
-        if (_erHash_[name]) return _erHash_[name];
+        if (_pgHash_[name]) return _pgHash_[name];
         const m = location.search.match(new RegExp('[?&]' + name + '=([^&]*)'));
         return m ? decodeURIComponent(m[1]) : '';
       }

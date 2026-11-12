@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>支払通知書のご確認</title>
+  <!-- v7.31: スタッフの支払通知書の確認ページ (メールのリンクから)。サーバー側は Payout.js -->
+  <style>
+    :root { --primary: #4f46e5; --border: #e2e8f0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Segoe UI", sans-serif; background: #f8fafc; color: #0f172a; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 16px; }
+    .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+    h1 { font-size: 18px; margin: 4px 0 12px; }
+    .amount { background: #fef3c7; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; }
+    .amount b { display: block; text-align: right; font-size: 26px; color: #92400e; }
+    .btn { border: 0; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: #fff; color: var(--primary); border: 1px solid #c7d2fe; }
+    .btn:disabled { opacity: .5; cursor: default; }
+    label { display: block; font-size: 12px; margin-bottom: 8px; }
+    input, select, textarea { width: 100%; font-size: 15px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 2px; font-family: inherit; }
+    .hint { font-size: 12px; color: #64748b; }
+    .statement { overflow-x: auto; }
+    .msg { padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; }
+    .ok { background: #dcfce7; color: #166534; }
+    .warn { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .info { background: #eff6ff; color: #1e3a8a; }
+  </style>
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <script>
+    const _pgHash_ = (function () {
+      const o = {};
+      String(location.hash || '').replace(/^#/, '').split('&').forEach(function (p) { const i = p.indexOf('='); if (i > 0) o[decodeURIComponent(p.slice(0, i))] = decodeURIComponent(p.slice(i + 1)); });
+      return o;
+    })();
+    window.google = { script: { get run() {
+      let ok = null, ng = null;
+      const r = new Proxy({}, { get: function (t, k) {
+        if (k === 'withSuccessHandler') return function (f) { ok = f; return r; };
+        if (k === 'withFailureHandler') return function (f) { ng = f; return r; };
+        if (k === 'withUserObject') return function () { return r; };
+        return function () {
+          const args = Array.prototype.slice.call(arguments);
+          if (!_pgHash_.api) { if (ng) ng(new Error("メールに書かれたリンクから開いてください")); return; }
+          fetch(_pgHash_.api, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "payok", op: k, args: args }) })
+            .then(function (x) { return x.json(); })
+            .then(function (j) { if (j && j.ok) { if (ok) ok(j.result); } else if (ng) ng(new Error((j && (j.error || j.message)) || '通信できませんでした')); })
+            .catch(function () { if (ng) ng(new Error('通信できませんでした。電波の良い所でもう一度お試しください。')); });
+        };
+      } });
+      return r;
+    } } };
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <h1>支払通知書のご確認</h1>
+    <div id="root"><div class="card hint">読み込み中…</div></div>
+  </div>
+  <script>
+    var PERF_ID = String(_pgHash_.id || '');
+    var PAY_KEY = String(_pgHash_.k || '').replace(/[^A-Za-z0-9]/g, '');
+    var VIEW = null;
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function yen(n) { return '¥' + (Number(n) || 0).toLocaleString(); }
+    function $(id) { return document.getElementById(id); }
+    function fail(e) { $('root').innerHTML = '<div class="card msg warn">' + esc(e && e.message ? e.message : e) + '</div>'; }
+    function call(fn, args, done, btn) {
+      if (btn) btn.disabled = true;
+      var r = google.script.run.withSuccessHandler(function (v) { done(v); }).withFailureHandler(function (e) { if (btn) btn.disabled = false; alert(e && e.message ? e.message : e); });
+      r[fn].apply(r, args);
+    }
+    function render(v) {
+      VIEW = v;
+      if (!v || !v.ok) { fail((v && v.message) || '表示できませんでした'); return; }
+      var p = v.payout || {}, b = v.payInfo || {};
+      var state = '';
+      if (p.status === 'paid') state = '<div class="msg ok"><b>✓ ' + esc(p.paidDate.replace(/-/g, '/')) + ' にお振込みしました</b></div>';
+      else if (p.status === 'ok') state = '<div class="msg ok"><b>✓ この内容でOKをいただきました</b> (' + esc(p.okAt) + ')<br>お振込みまでお待ちください。</div>';
+      else if (p.status === 'question') state = '<div class="msg info"><b>質問・修正のお願いを受け付けました</b> (' + esc(p.questionAt) + ')<br>「' + esc(p.question) + '」<br>担当から連絡します。</div>';
+      else if (p.okChanged) state = '<div class="msg warn">OKをいただいた後に金額が変わりました。もう一度ご確認ください。</div>';
+      var lack = (b.missing || []);
+      var bankBox = '<div class="card"><div style="font-weight:700; margin-bottom:6px;">お振込先 <span class="hint">(口座番号は下3桁だけ表示)</span></div>'
+        + '<div style="font-weight:700;">' + (b.bank ? esc(b.bank) : '<span style="color:#b91c1c;">未登録</span>') + '</div>'
+        + (b.invoiceNo ? '<div class="hint">インボイス登録番号: ' + esc(b.invoiceNo) + '</div>' : '')
+        + (lack.length ? '<div class="msg warn" style="margin-top:8px;">足りない項目: ' + esc(lack.join('・')) + '。このままではお振込みできません。下から登録してください。</div>' : '')
+        + ((b.notes || []).length ? '<div class="msg info" style="margin-top:8px;">ご確認ください: ' + esc(b.notes.join('・')) + '</div>' : '')
+        + (p.status === 'paid' ? '' : '<button type="button" class="btn btn-secondary" style="margin-top:8px;" onclick="toggle(\'bank-form\')">' + (b.bank ? 'お振込先を変更する' : 'お振込先を登録する') + '</button>'
+        + '<div id="bank-form" style="display:none; margin-top:10px;">'
+        + '<div class="hint" style="margin-bottom:8px;">ご本人名義の口座を入れてください。ゆうちょ銀行は「振込用の店名・預金種目・口座番号 (7桁)」です。</div>'
+        + '<label>銀行名<input id="f-bank" placeholder="例: ○○銀行 / ゆうちょ銀行" autocomplete="off"></label>'
+        + '<label>支店名 (または店番)<input id="f-branch" placeholder="例: 本町支店 / 〇一八" autocomplete="off"></label>'
+        + '<label>口座種別<select id="f-type"><option>普通</option><option>当座</option><option>貯蓄</option></select></label>'
+        + '<label>口座番号 (7桁)<input id="f-number" inputmode="numeric" maxlength="7" placeholder="1234567" autocomplete="off"></label>'
+        + '<label>口座名義 (カタカナ)<input id="f-holder" placeholder="例: ヤマダ ハナコ" autocomplete="off"></label>'
+        + '<label>インボイス登録番号 (お持ちの方のみ)<input id="f-invoice" value="' + esc(b.invoiceNo || '') + '" placeholder="T1234567890123" autocomplete="off"></label>'
+        + '<button type="button" class="btn btn-primary" onclick="saveBank(this)">この内容で登録する</button></div>')
+        + '</div>';
+      var canOk = p.status !== 'paid' && p.status !== 'ok' && !lack.length;
+      var actions = p.status === 'paid' ? '' : '<div class="card">'
+        + '<div style="display:flex; gap:8px; flex-wrap:wrap;">'
+        + (p.status === 'ok' ? '' : '<button type="button" class="btn btn-primary" ' + (canOk ? '' : 'disabled') + ' onclick="okPay(this)">この内容でOK</button>')
+        + '<button type="button" class="btn btn-secondary" onclick="toggle(\'ask-form\')">質問・修正をお願いする</button></div>'
+        + (!canOk && lack.length ? '<div class="hint" style="margin-top:6px;">お振込先を登録すると、OKを押せるようになります。</div>' : '')
+        + '<div id="ask-form" style="display:none; margin-top:10px;"><label>どこが違うか・聞きたいこと<textarea id="f-ask" rows="3" maxlength="500"></textarea></label>'
+        + '<button type="button" class="btn btn-primary" onclick="ask(this)">送る</button></div></div>';
+      $('root').innerHTML = state
+        + '<div class="card"><div class="hint">公演</div><div style="font-weight:700; margin-bottom:10px;">' + esc(v.perfTitle) + '</div>'
+        + '<div class="amount"><span class="hint">お支払予定額</span><b>' + yen(v.amount) + '</b>' + (v.paymentDueDate ? '<div class="hint" style="text-align:right;">予定日: ' + esc(v.paymentDueDate) + '</div>' : '') + '</div>'
+        + '<div class="statement">' + (v.statementHtml || '') + '</div></div>'
+        + actions + bankBox;
+    }
+    function toggle(id) { var f = $(id); if (f) f.style.display = f.style.display === 'none' ? '' : 'none'; }
+    function okPay(btn) {
+      if (!confirm(yen(VIEW.amount) + ' の内容でOKします。よろしいですか？')) return;
+      call('staffPayokConfirm', [PERF_ID, PAY_KEY, VIEW.amount], render, btn);
+    }
+    function ask(btn) {
+      var t = ($('f-ask').value || '').trim();
+      if (!t) { alert('内容を書いてください'); return; }
+      call('staffPayokAsk', [PERF_ID, PAY_KEY, t], render, btn);
+    }
+    function saveBank(btn) {
+      var g = function (id) { return ($(id).value || '').trim(); };
+      var d = { bank: g('f-bank'), branch: g('f-branch'), type: g('f-type'), number: g('f-number'), holder: g('f-holder'), invoiceNo: g('f-invoice') };
+      if (!d.bank || !d.branch || !d.number || !d.holder) { alert('銀行名・支店名・口座番号・口座名義を入れてください'); return; }
+      if (!confirm('この振込先で登録します。\n' + d.bank + ' ' + d.branch + ' ' + d.type + ' ' + d.number + ' ' + d.holder + '\nよろしいですか？')) return;
+      call('staffPayokSaveBank', [PERF_ID, PAY_KEY, d], function (v) { alert('お振込先を登録しました'); render(v); }, btn);
+    }
+    google.script.run.withSuccessHandler(render).withFailureHandler(fail).staffPayokGet(PERF_ID, PAY_KEY);
+  </script>
+</body>
+</html>

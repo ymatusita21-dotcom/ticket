@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="theme-color" content="#f7f7f5">
+  <!-- v6.50: 全公演共通の問い合わせフォーム (?page=contact)。Googleサイトに埋め込んで使う
+       v6.52: 見た目を公式サイトの問い合わせ (link-stage.enirin.com/maho-yame/contact) にそろえた (入力 → 確認 → 完了) -->
+  <style>
+    /* v6.54: 色はLPと同じ変数 (rgb-* は半透明用)。&theme=snow で雪の配色 */
+    :root {
+      --color-background: #f7f7f5;
+      --color-surface: #ffffff;
+      --color-text: #29292d;
+      --color-muted: #77777f;
+      --color-line: rgba(70, 70, 78, 0.2);
+      --color-accent: #e8b7c8;
+      --color-gold: #cdae6d;
+      --rgb-gold: 205, 174, 109;
+      --rgb-accent: 232, 183, 200;
+      --rgb-shadow: 40, 30, 20;
+      --font-serif: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif;
+      --font-sans: "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      --content-width: 1280px;
+    }
+    :root[data-theme="snow"] {
+      --color-background: #f4f7fa;
+      --color-surface: #ffffff;
+      --color-text: #263240;
+      --color-muted: #6e7b88;
+      --color-line: rgba(60, 82, 105, 0.2);
+      --color-accent: #a9cbe6;
+      --color-gold: #9fb4c8;
+      --rgb-gold: 159, 180, 200;
+      --rgb-accent: 169, 203, 230;
+      --rgb-shadow: 20, 35, 55;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; color: var(--color-text); background: var(--color-background); font-family: var(--font-sans); line-height: 1.8; }
+    [hidden] { display: none !important; }
+    button, input, textarea, select { font: inherit; color: inherit; }
+
+    .section-divider { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin: 0 0 40px; }
+    .section-divider::before, .section-divider::after { content: ''; display: block; width: clamp(40px, 6vw, 88px); height: 1px; background: linear-gradient(90deg, rgba(var(--rgb-gold), 0), var(--color-gold)); }
+    .section-divider::after { background: linear-gradient(90deg, var(--color-gold), rgba(var(--rgb-gold), 0)); }
+    .section-divider__mark { flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--color-gold); transform: rotate(45deg); }
+
+    .corner-ornament { position: absolute; z-index: 1; width: clamp(32px, 4vw, 56px); height: clamp(32px, 4vw, 56px); color: var(--color-gold); opacity: 0.45; pointer-events: none; }
+    .corner-ornament--tl { top: 14px; left: 14px; }
+    .corner-ornament--tr { top: 14px; right: 14px; transform: scaleX(-1); }
+    .corner-ornament--bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+    .corner-ornament--br { bottom: 14px; right: 14px; transform: scale(-1, -1); }
+
+    .contact { position: relative; padding: 120px max(24px, calc((100vw - var(--content-width)) / 2)) 140px; }
+    .contact__inner { max-width: 640px; margin: 0 auto; }
+    .contact__eyebrow { margin: 0 0 12px; color: var(--color-muted); font-size: 12px; letter-spacing: 0.2em; text-align: center; }
+    .contact__title { margin: 0 0 20px; font-family: var(--font-serif); font-size: clamp(28px, 3vw, 40px); font-weight: 400; text-align: center; }
+    .contact__perf { margin: -8px 0 28px; font-family: var(--font-serif); font-size: 15px; text-align: center; }
+    .contact__company { margin-bottom: 48px; padding: 24px; border: 1px solid var(--color-line); background: var(--color-surface); box-shadow: 0 4px 18px rgba(var(--rgb-shadow), 0.05); text-align: center; }
+    .contact__reply-note { margin: 0 0 32px; padding: 18px 20px; font-size: 14px; line-height: 1.9; color: var(--color-text); }
+
+    .contact-privacy { margin-bottom: 32px; }
+    .contact-privacy__summary { width: fit-content; padding-bottom: 2px; border-bottom: 1px solid var(--color-line); list-style: none; cursor: pointer; font-size: 13px; }
+    .contact-privacy__summary::-webkit-details-marker { display: none; }
+    .contact-privacy__body { margin-top: 14px; color: var(--color-muted); font-size: 13px; line-height: 1.9; }
+
+    .contact-field { margin-bottom: 22px; }
+    .contact-field label { display: block; margin-bottom: 8px; font-size: 13px; letter-spacing: 0.08em; }
+    .contact-field__required { color: var(--color-accent); font-size: 11px; letter-spacing: 0.1em; }
+    .contact-field input, .contact-field select, .contact-field textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--color-line); border-radius: 0; background: var(--color-surface); font-size: 16px; font-family: inherit; }
+    .contact-field textarea { resize: vertical; }
+    .contact-field--honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+
+    .contact-form__error { margin: 0 0 16px; color: #b3261e; font-size: 13px; }
+    .contact-form__submit, .contact-form__back { display: inline-flex; align-items: center; justify-content: center; min-width: 200px; height: 54px; padding: 0 28px; border: 1px solid var(--color-line); background: var(--color-surface); font-size: 14px; letter-spacing: 0.08em; cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease; }
+    .contact-form__submit:hover, .contact-form__back:hover { border-color: var(--color-accent); background: rgba(var(--rgb-accent), 0.08); }
+    .contact-form__submit:disabled { cursor: not-allowed; opacity: 0.6; }
+    .contact-form__actions { display: flex; gap: 16px; justify-content: center; }
+
+    .contact-confirm { margin: 0 0 24px; }
+    .contact-confirm dt { margin-top: 16px; color: var(--color-muted); font-size: 12px; letter-spacing: 0.1em; }
+    .contact-confirm dd { margin: 6px 0 0; font-size: 15px; }
+    .contact-confirm__message { white-space: pre-wrap; line-height: 1.9; }
+
+    .contact-done__message { font-size: 16px; line-height: 2; text-align: center; }
+    .contact-done__id { margin-top: 16px; color: var(--color-muted); font-size: 14px; text-align: center; }
+    .contact-done__close-note { margin-top: 24px; color: var(--color-muted); font-size: 13px; text-align: center; }
+
+    .site-footer { padding: 64px 40px; border-top: 1px solid var(--color-line); background: rgba(255, 255, 255, 0.55); }
+    .site-footer__title { margin: 0; font-family: var(--font-serif); font-size: 20px; }
+    .site-footer__copyright { margin-top: 32px; color: var(--color-muted); font-size: 12px; letter-spacing: 0.1em; }
+
+    /* v6.53: LPのポップアップの中 (&embed=1) */
+    body.is-embed { background: var(--color-surface); }
+    body.is-embed .contact { padding: 40px 28px 44px; }
+    body.is-embed .site-footer { display: none; }
+
+    @media (max-width: 899px) {
+      .contact { padding-top: 72px; padding-bottom: 72px; }
+      .contact-form__actions { flex-direction: column; }
+      .contact-form__submit, .contact-form__back { width: 100%; }
+      .site-footer { padding: 48px 20px; }
+    }
+    @media (max-width: 480px) {
+      body.is-embed .contact { padding: 28px 18px 40px; }
+    }
+  </style>
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <script>
+    const _pgHash_ = (function () {
+      const o = {};
+      String(location.hash || '').replace(/^#/, '').split('&').forEach(function (p) { const i = p.indexOf('='); if (i > 0) o[decodeURIComponent(p.slice(0, i))] = decodeURIComponent(p.slice(i + 1)); });
+      return o;
+    })();
+    window.google = { script: { get run() {
+      let ok = null, ng = null;
+      const r = new Proxy({}, { get: function (t, k) {
+        if (k === 'withSuccessHandler') return function (f) { ok = f; return r; };
+        if (k === 'withFailureHandler') return function (f) { ng = f; return r; };
+        if (k === 'withUserObject') return function () { return r; };
+        return function () {
+          const args = Array.prototype.slice.call(arguments);
+          if (!_pgHash_.api) { if (ng) ng(new Error("問い合わせフォームのURLが正しくありません")); return; }
+          fetch(_pgHash_.api, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "contact", op: k, args: args }) })
+            .then(function (x) { return x.json(); })
+            .then(function (j) { if (j && j.ok) { if (ok) ok(j.result); } else if (ng) ng(new Error((j && (j.error || j.message)) || '通信できませんでした')); })
+            .catch(function () { if (ng) ng(new Error('通信できませんでした。電波の良い所でもう一度お試しください。')); });
+        };
+      } });
+      return r;
+    } } };
+  </script>
+</head>
+<body>
+  <main>
+    <section class="contact" id="contact">
+      <svg class="corner-ornament corner-ornament--tl" viewBox="0 0 100 100" fill="none" aria-hidden="true"><use href="#ornament"/></svg>
+      <svg class="corner-ornament corner-ornament--tr" viewBox="0 0 100 100" fill="none" aria-hidden="true"><use href="#ornament"/></svg>
+      <svg class="corner-ornament corner-ornament--bl" viewBox="0 0 100 100" fill="none" aria-hidden="true"><use href="#ornament"/></svg>
+      <svg class="corner-ornament corner-ornament--br" viewBox="0 0 100 100" fill="none" aria-hidden="true"><use href="#ornament"/></svg>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="ornament" viewBox="0 0 100 100">
+          <path d="M4 40 V12 Q4 4 12 4 H40" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+          <path d="M4 55 Q4 60 9 60 Q14 60 14 55 Q14 51 10 51" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+          <path d="M55 4 Q60 4 60 9 Q60 14 55 14 Q51 14 51 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+          <circle cx="4" cy="4" r="2.2" fill="currentColor"/>
+        </symbol>
+      </svg>
+
+      <div class="contact__inner">
+        <p class="contact__eyebrow">CONTACT</p>
+        <h2 class="contact__title">お問い合わせ</h2>
+        <p class="contact__perf" id="perf-fixed" hidden></p>
+        <div class="section-divider" aria-hidden="true"><span class="section-divider__mark"></span></div>
+
+        <p class="contact__company contact__reply-note">
+          ご返信までに3〜5営業日ほどお時間をいただいております。<br>
+          土日祝日・年末年始はお休みをいただいているため、ご返信が遅れる場合がございます。
+        </p>
+
+        <details class="contact-privacy">
+          <summary class="contact-privacy__summary">個人情報の取り扱いについて</summary>
+          <div class="contact-privacy__body">
+            お預かりした個人情報は、お問い合わせへの回答および必要な範囲でのご連絡のためにのみ利用し、ご本人の同意なく第三者へ提供することはありません。<br>法令に基づく場合を除き、目的外の利用は行いません。<br>個人情報の開示・訂正・削除等をご希望の場合は、上記お問い合わせ窓口までご連絡ください。
+          </div>
+        </details>
+
+        <form id="contactForm" class="contact-form" novalidate>
+          <div class="contact-step" data-step="input">
+            <!-- 公演専用のURL (&id=) では出さない -->
+            <div class="contact-field" id="perf-pick">
+              <label for="contact-perf">公演 <span class="contact-field__required">必須</span></label>
+              <select id="contact-perf" required></select>
+            </div>
+
+            <div class="contact-field">
+              <label for="contact-type">お問い合わせ種別 <span class="contact-field__required">必須</span></label>
+              <select id="contact-type" required></select>
+            </div>
+
+            <div class="contact-field">
+              <label for="contact-name">お名前 <span class="contact-field__required">必須</span></label>
+              <input id="contact-name" type="text" maxlength="100" autocomplete="name" required>
+            </div>
+
+            <div class="contact-field">
+              <label for="contact-email">メールアドレス <span class="contact-field__required">必須</span></label>
+              <input id="contact-email" type="email" maxlength="200" autocomplete="email" inputmode="email" required>
+            </div>
+
+            <div class="contact-field">
+              <label for="contact-message">お問い合わせ内容 <span class="contact-field__required">必須</span></label>
+              <textarea id="contact-message" rows="6" maxlength="5000" required></textarea>
+            </div>
+
+            <div class="contact-field--honeypot" aria-hidden="true">
+              <label for="contact-website">website</label>
+              <input id="contact-website" type="text" tabindex="-1" autocomplete="off">
+            </div>
+
+            <p class="contact-form__error" data-role="error" hidden></p>
+            <div class="contact-form__actions">
+              <button type="button" class="contact-form__submit" data-action="to-confirm">確認画面へ</button>
+            </div>
+          </div>
+
+          <div class="contact-step" data-step="confirm" hidden>
+            <dl class="contact-confirm">
+              <dt data-confirm-label="perf">公演</dt><dd data-confirm="perf"></dd>
+              <dt>お問い合わせ種別</dt><dd data-confirm="type"></dd>
+              <dt>お名前</dt><dd data-confirm="name"></dd>
+              <dt>メールアドレス</dt><dd data-confirm="email"></dd>
+              <dt>お問い合わせ内容</dt><dd data-confirm="message" class="contact-confirm__message"></dd>
+            </dl>
+            <p class="contact-form__error" data-role="confirm-error" hidden></p>
+            <div class="contact-form__actions">
+              <button type="button" class="contact-form__back" data-action="back">戻る</button>
+              <button type="submit" class="contact-form__submit" data-action="submit">送信する</button>
+            </div>
+          </div>
+
+          <div class="contact-step" data-step="done" hidden>
+            <p class="contact-done__message">お問い合わせを受け付けました。<br>3〜5営業日以内にご返信いたします。</p>
+            <p class="contact-done__id">お問い合わせID：<span data-role="done-id"></span></p>
+            <p class="contact-done__close-note">このページは閉じていただいて構いません。</p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p class="site-footer__title" id="footer-title"></p>
+    <p class="site-footer__copyright">© <span id="footer-year"></span> link-stage / Enirin LLC</p>
+  </footer>
+
+  <script>
+    window._ctStart_ = function (INIT) {
+      'use strict';
+      const renderedAt = Date.now();
+      const form = document.getElementById('contactForm');
+      const q = (sel) => form.querySelector(sel);
+      const steps = { input: q('[data-step="input"]'), confirm: q('[data-step="confirm"]'), done: q('[data-step="done"]') };
+      const fields = { perf: q('#contact-perf'), type: q('#contact-type'), name: q('#contact-name'), email: q('#contact-email'), message: q('#contact-message'), website: q('#contact-website') };
+      const errorEl = q('[data-role="error"]');
+      const confirmErrorEl = q('[data-role="confirm-error"]');
+
+      const fmtRange = (p) => {
+        const d = (s) => s ? Number(s.slice(5, 7)) + '/' + Number(s.slice(8, 10)) : '';
+        if (!p.firstDate) return '';
+        return p.firstDate === p.lastDate ? d(p.firstDate) : d(p.firstDate) + '〜' + d(p.lastDate);
+      };
+      const addOption = (sel, value, text) => { const o = document.createElement('option'); o.value = value; o.textContent = text; sel.appendChild(o); return o; };
+
+      if (INIT.embed) document.body.classList.add('is-embed');
+      if (INIT.theme) document.documentElement.setAttribute('data-theme', INIT.theme);
+      document.getElementById('footer-year').textContent = new Date().getFullYear();
+      addOption(fields.type, '', '選択してください');
+      INIT.categories.forEach((c) => addOption(fields.type, c, c));
+      if (INIT.fixed) {
+        // v6.51: 公演専用のURL。選択欄は出さず、この公演へ直接送る
+        addOption(fields.perf, INIT.fixed.id, INIT.fixed.title);
+        fields.perf.value = INIT.fixed.id;
+        document.getElementById('perf-pick').hidden = true;
+        const t = document.getElementById('perf-fixed');
+        t.textContent = INIT.fixed.title;
+        t.hidden = false;
+        document.getElementById('footer-title').textContent = INIT.fixed.title;
+        q('[data-confirm-label="perf"]').hidden = true;
+        q('[data-confirm="perf"]').hidden = true;
+      } else {
+        addOption(fields.perf, '', '選択してください');
+        INIT.perfs.forEach((p) => addOption(fields.perf, p.id, p.title + (fmtRange(p) ? ' (' + fmtRange(p) + ')' : '')));
+        addOption(fields.perf, '__general__', INIT.generalLabel);
+        document.getElementById('footer-title').textContent = 'link-stage';
+      }
+
+      function showStep(name) {
+        Object.keys(steps).forEach((k) => { steps[k].hidden = k !== name; });
+        try { window.scrollTo(0, 0); } catch (e) {}
+      }
+      function showError(el, message) { el.textContent = message; el.hidden = !message; }
+      function validateInput() {
+        if (!fields.perf.value) return '公演を選択してください。';
+        if (!fields.type.value) return 'お問い合わせ種別を選択してください。';
+        if (!fields.name.value.trim()) return 'お名前を入力してください。';
+        if (!fields.email.value.trim() || fields.email.validity.typeMismatch) return 'メールアドレスの形式が正しくありません。';
+        if (!fields.message.value.trim()) return 'お問い合わせ内容を入力してください。';
+        return '';
+      }
+
+      q('[data-action="to-confirm"]').addEventListener('click', () => {
+        const error = validateInput();
+        showError(errorEl, error);
+        if (error) return;
+        q('[data-confirm="perf"]').textContent = fields.perf.options[fields.perf.selectedIndex].textContent;
+        q('[data-confirm="type"]').textContent = fields.type.value;
+        q('[data-confirm="name"]').textContent = fields.name.value.trim();
+        q('[data-confirm="email"]').textContent = fields.email.value.trim();
+        q('[data-confirm="message"]').textContent = fields.message.value.trim();
+        showError(confirmErrorEl, '');
+        showStep('confirm');
+      });
+      q('[data-action="back"]').addEventListener('click', () => showStep('input'));
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (steps.confirm.hidden) return;   // 入力画面での Enter は確認画面へ進むボタンと同じにしない
+        const btn = q('[data-action="submit"]');
+        btn.disabled = true;
+        btn.textContent = '送信中…';
+        const restore = () => { btn.disabled = false; btn.textContent = '送信する'; };
+        google.script.run
+          .withSuccessHandler((res) => {
+            q('[data-role="done-id"]').textContent = (res && res.inquiryId) || '';
+            showStep('done');
+          })
+          .withFailureHandler((e) => {
+            const msg = String(e && e.message ? e.message : e || '').replace(/^Exception:\s*/, '');
+            showError(confirmErrorEl, msg || '通信エラーが発生しました。時間をおいて再度お試しください。');
+            restore();
+          })
+          .submitContactForm({
+            perfId: fields.perf.value === '__general__' ? '' : fields.perf.value,
+            category: fields.type.value,
+            name: fields.name.value.trim(),
+            email: fields.email.value.trim(),
+            message: fields.message.value.trim(),
+            website: fields.website.value,
+            elapsed: Date.now() - renderedAt,
+          });
+      });
+    };
+    google.script.run.withSuccessHandler(function (init) { window._ctStart_(init); })
+      .withFailureHandler(function (e) { const m = document.querySelector('[data-role="error"]'); if (m) { m.textContent = '読み込めませんでした: ' + (e && e.message ? e.message : e); m.hidden = false; } })
+      .contactInit(_pgHash_.id || '', _pgHash_.embed === '1', _pgHash_.theme || '');
+  </script>
+</body>
+</html>
