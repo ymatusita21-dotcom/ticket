@@ -83,7 +83,7 @@
       else if (p.status === 'question') state = '<div class="msg info"><b>質問・修正のお願いを受け付けました</b> (' + esc(p.questionAt) + ')<br>「' + esc(p.question) + '」<br>担当から連絡します。</div>';
       else if (p.okChanged) state = '<div class="msg warn">OKをいただいた後に金額が変わりました。もう一度ご確認ください。</div>';
       var lack = (b.missing || []);
-      var bankBox = '<div class="card"><div style="font-weight:700; margin-bottom:6px;">お振込先 <span class="hint">(口座番号は下3桁だけ表示)</span></div>'
+      var bankBox = '<div class="card"><div style="font-weight:700; margin-bottom:6px;">お振込先 <span class="hint">(間違いが無いかご確認ください)</span></div>'
         + '<div style="font-weight:700;">' + (b.bank ? esc(b.bank) : '<span style="color:#b91c1c;">未登録</span>') + '</div>'
         + (b.invoiceNo ? '<div class="hint">インボイス登録番号: ' + esc(b.invoiceNo) + '</div>' : '')
         + (lack.length ? '<div class="msg warn" style="margin-top:8px;">足りない項目: ' + esc(lack.join('・')) + '。このままではお振込みできません。下から登録してください。</div>' : '')
