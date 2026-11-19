@@ -539,6 +539,7 @@
         + '</div>'
         + gachaHtml()
         + castHtml(false)
+        + (/^https:\/\/[^\s<>"']+$/.test(String(data.goods || '')) ? '<div style="text-align:center"><a class="btn pri" href="' + esc(data.goods) + '" target="_blank" rel="noopener">🛍 グッズ・チェキを先に選ぶ</a><div style="margin-top:6px;font-size:12px;opacity:.8">選んでおくと、物販のレジで番号を見せるだけ。お支払いはレジで</div></div>' : '')
         + '<div class="foot">このURLはご本人様専用です。他の方に共有しないでください。<br>スクリーンショットではなく、この画面のままお見せください。</div>'
         + (fx.countdown && ph === 'live' && !liveHidden ? liveHtml() : '');
       startClock();
